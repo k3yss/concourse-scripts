@@ -1,0 +1,5 @@
+#@data/values
+---
+git_repo_uri: https://github.com/GaloyMoney/blink.git 
+bash_repo_uri: https://github.com/k3yss/concourse-scripts
+container_image: k3ys/galoy-test

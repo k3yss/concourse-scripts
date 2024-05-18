@@ -1,0 +1,40 @@
+#@ load("@ytt:data","data")
+resources:
+- name: blink-git-repo
+  type: git
+  icon: github
+  source:
+    uri: #@ data.values.git_repo_uri
+
+- name: bash-scripts 
+  type: git 
+  icon: github
+  source:
+    uri: #@ data.values.bash_repo_uri
+
+- name: every-day-trigger
+  type: time
+  icon: clock-outline
+  source:
+    interval: 24h
+
+jobs:
+- name: gcp-backup
+  plan:
+  - get: every-day-trigger
+    trigger: true
+  - get: blink-git-repo
+  - get: bash-scripts 
+  - task: gcp-backup
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: #@ data.values.container_image
+      inputs: 
+      - name: blink-git-repo
+      - name: bash-scripts 
+      run:
+        path: /bin/sh 
+        args: ["./bash-scripts/backup-gcp.sh"]
